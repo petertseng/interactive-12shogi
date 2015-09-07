@@ -172,6 +172,10 @@ class Game
     player_name(@player_to_move)
   end
 
+  def player_not_to_move
+    player_name(-@player_to_move)
+  end
+
   def reserve_string(id)
     pieces = @reserves.fetch(id).map { |sym, num| PIECE_NAMES.fetch(sym) * num }.join
     colorize(pieces, player_color(id))
@@ -318,13 +322,20 @@ class Move
     @piece = PIECE_SYMBOLS.fetch(squares_and_piece[5..6])
   end
 
-  def to_s(color: nil)
+  def to_s(color: nil, my_name: nil, opponents_name: nil)
+    result2 = ''
+    max_length = [my_name.to_s.length, opponents_name.to_s.length].max
+    if @result == :lose && opponents_name
+      result2 = " (%#{max_length}s wins)" % opponents_name
+    elsif @result == :win && my_name
+      result2 = " (%#{max_length}s wins)" % my_name
+    end
     piece = PIECE_NAMES.fetch(@piece)
-    '%2d: %s %2s -> %2s %4s in %d moves' % [
+    '%2d: %s %2s -> %2s %4s%s in %d moves' % [
       @move_id,
       color ? colorize(piece, color) : piece,
       @source_square, @destination_square,
-      @result, @moves
+      @result, result2, @moves
     ]
   end
 end
@@ -344,7 +355,11 @@ class GameRunner
 
   def output_moves
     color = @game.player_color
-    puts @possible_moves.map { |move| move.to_s(color: color) }
+    puts @possible_moves.map { |move| move.to_s(
+      my_name: @game.player_to_move,
+      opponents_name: @game.player_not_to_move,
+      color: color,
+    )}
   end
 
   def change_direction(change)
