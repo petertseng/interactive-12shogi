@@ -360,7 +360,18 @@ class GameRunner
     puts @game.to_s(first_player_position: @first_player_position)
     puts
 
-    @possible_moves = get_moves
+    begin
+      @possible_moves = get_moves
+    rescue => e
+      puts e.inspect
+      if File.exist?(@filename)
+        puts IO.read(@filename)
+      else
+        puts 'tmp file got deleted somehow?'
+      end
+      puts 'retrying?'
+      return
+    end
 
     output_moves
 
