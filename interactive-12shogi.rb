@@ -83,6 +83,10 @@ class Game
     [three_side, four_side]
   end
 
+  def history
+    @undo_log.map { |move, _| move }
+  end
+
   def apply_move(move)
     three_side_new, four_side_new = self.class.interpret_coord(move.destination_square)
     if move.source_square == '00'
@@ -94,12 +98,12 @@ class Game
       raise "#{@player_to_move} #{move} dropped nonexistent #{move.piece}" unless old_count > 0
       @reserves.fetch(@player_to_move)[move.piece] = old_count - 1
 
-      @undo_log << {
+      @undo_log << [move, {
         type: :drop,
         four_side_new: four_side_new,
         three_side_new: three_side_new,
         piece: move.piece,
-      }
+      }]
     else
       # It's a move
       three_side_old, four_side_old = self.class.interpret_coord(move.source_square)
@@ -113,7 +117,7 @@ class Game
 
       @board[four_side_old][three_side_old] = nil
 
-      @undo_log << {
+      @undo_log << [move, {
         type: :move,
         four_side_old: four_side_old,
         three_side_old: three_side_old,
@@ -121,7 +125,7 @@ class Game
         three_side_new: three_side_new,
         piece: old_piece.type,
         captured_piece: captured_piece && captured_piece.type
-      }
+      }]
     end
     @board[four_side_new][three_side_new] = Piece.new(@player_to_move, move.piece)
     @player_to_move *= -1
@@ -130,7 +134,7 @@ class Game
   def undo_move
     @player_to_move *= -1
 
-    move = @undo_log.pop
+    _, move = @undo_log.pop
     return unless move
     case move[:type]
     when :move
@@ -396,6 +400,20 @@ class GameRunner
 
       if raw == 'undo'
         @game.undo_move
+        return
+      elsif raw == 'history'
+        player_names = [1, -1].map { |i| [i, @game.player_name(i)] }.to_h
+        @game.history.each_with_index { |history_move, i|
+          player_id = i % 2 == 0 ? 1 : -1
+          color = @game.player_color(player_id)
+          max_length = player_names.values.map(&:length).max
+          puts ("%#{max_length}s " % player_names[player_id]) + history_move.to_s(
+            id: false,
+            my_name: player_names[player_id],
+            opponents_name: player_names[-player_id],
+            color: color,
+          )
+        }
         return
       elsif raw == 'flip'
         change_direction(up: :down, down: :up, left: :right, right: :left)
