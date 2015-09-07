@@ -64,6 +64,8 @@ class Game
     }
 
     @player_to_move = 1
+
+    @undo_log = []
   end
 
   def self.interpret_color(c)
@@ -91,6 +93,13 @@ class Game
       old_count = @reserves.fetch(@player_to_move).fetch(move.piece)
       raise "#{@player_to_move} #{move} dropped nonexistent #{move.piece}" unless old_count > 0
       @reserves.fetch(@player_to_move)[move.piece] = old_count - 1
+
+      @undo_log << {
+        type: :drop,
+        four_side_new: four_side_new,
+        three_side_new: three_side_new,
+        piece: move.piece,
+      }
     else
       # It's a move
       three_side_old, four_side_old = self.class.interpret_coord(move.source_square)
@@ -103,13 +112,50 @@ class Game
       @reserves.fetch(@player_to_move)[captured_piece.type] += 1 if captured_piece
 
       @board[four_side_old][three_side_old] = nil
+
+      @undo_log << {
+        type: :move,
+        four_side_old: four_side_old,
+        three_side_old: three_side_old,
+        four_side_new: four_side_new,
+        three_side_new: three_side_new,
+        piece: old_piece.type,
+        captured_piece: captured_piece && captured_piece.type
+      }
     end
     @board[four_side_new][three_side_new] = Piece.new(@player_to_move, move.piece)
     @player_to_move *= -1
   end
 
   def undo_move
-    raise 'unimplemented'
+    @player_to_move *= -1
+
+    move = @undo_log.pop
+    return unless move
+    case move[:type]
+    when :move
+      # Put the piece back on the square where it came from.
+      # Unpromote it if it promoted.
+      @board[move[:four_side_old]][move[:three_side_old]] = Piece.new(@player_to_move, move[:piece])
+
+      if move[:captured_piece]
+        # Remove the captured piece from the player's reserves.
+        old_count = @reserves.fetch(@player_to_move).fetch(move[:captured_piece])
+        raise "#{@player_to_move} #{move} undid capture of nonexistent #{move[:captured_piece]}" unless old_count > 0
+        @reserves.fetch(@player_to_move)[move[:captured_piece]] = old_count - 1
+        # Put the captured piece back on the board, on the opponent's side.
+        @board[move[:four_side_new]][move[:three_side_new]] = Piece.new(-@player_to_move, move[:captured_piece])
+      else
+        # If no captured piece, just clear the square the piece moved to.
+        @board[move[:four_side_new]][move[:three_side_new]] = nil
+      end
+    when :drop
+      # Return the dropped piece to reserves, remove it from the board.
+      @reserves.fetch(@player_to_move)[move[:piece]] += 1
+      @board[move[:four_side_new]][move[:three_side_new]] = nil
+    else
+      raise "Unknown move type #{move[:type]}"
+    end
   end
 
   def player_name(id, colorize: true)
