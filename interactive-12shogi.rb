@@ -24,6 +24,11 @@ PIECE_COMPUTER_NAMES = {
   lion: 'LI',
 }
 
+[PLAYER_COMPUTER_NAMES, PIECE_NAMES, PIECE_COMPUTER_NAMES].each { |h|
+  h.values.each(&:freeze)
+  h.freeze
+}
+
 PIECE_SYMBOLS = PIECE_COMPUTER_NAMES.invert
 
 def colorize(str, color)
