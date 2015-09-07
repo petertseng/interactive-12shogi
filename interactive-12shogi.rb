@@ -2,6 +2,7 @@ require 'open3'
 require 'tempfile'
 
 EXECUTABLE = './checkState'
+raise "expected #{EXECUTABLE} to exist, but it doesn't" unless File.exist?(EXECUTABLE)
 
 PLAYER_COMPUTER_NAMES = {
   1 => '+',
