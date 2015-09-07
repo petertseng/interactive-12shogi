@@ -256,23 +256,43 @@ class Game
     end
 
     # Table top
-    str << "#{left_padding}   #{cols.join('  ')}\n"
-    str <<  "#{left_padding}  ┏#{'━━┳' * (cols.size - 1)}━━┓\n"
+    str << "#{left_padding}    #{cols.join('   ')}\n"
+    str <<  "#{left_padding}  ┏#{'━━━┳' * (cols.size - 1)}━━━┓\n"
 
     # Table body
     str << display.zip(rows).map { |row, row_id|
       pieces = row.map { |piece|
-        next '  ' unless piece
-        name = PIECE_NAMES.fetch(piece.type)
+        next '   ' unless piece
+        name = PIECE_NAMES.fetch(piece.type).dup
+
+        case first_player_position
+        when :up
+          name << (piece.player == 1 ? ?V : ?^)
+        when :down
+          name << (piece.player == 1 ? ?^ : ?V)
+        when :left
+          if piece.player == 1
+            name << ?>
+          else
+            name = ?< + name
+          end
+        when :right
+          if piece.player == 1
+            name = ?< + name
+          else
+            name << ?>
+          end
+        end
+
         color = player_color(piece.player)
         colorize(name, color)
       }
       "#{left_padding}#{row_id} ┃#{pieces.join('┃')}┃ #{row_id}\n"
-    }.join("#{left_padding}  ┣#{'━━╋' * (cols.size - 1)}━━┫\n")
+    }.join("#{left_padding}  ┣#{'━━━╋' * (cols.size - 1)}━━━┫\n")
 
     # Table bottom
-    str << "#{left_padding}  ┗#{'━━┻' * (cols.size - 1)}━━┛\n"
-    str << "#{left_padding}   #{cols.join('  ')}\n"
+    str << "#{left_padding}  ┗#{'━━━┻' * (cols.size - 1)}━━━┛\n"
+    str << "#{left_padding}    #{cols.join('   ')}\n"
 
     case first_player_position
     when :up
