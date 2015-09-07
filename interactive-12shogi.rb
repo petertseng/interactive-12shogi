@@ -331,7 +331,7 @@ class Move
       result2 = " (%#{max_length}s wins)" % my_name
     end
     piece = PIECE_NAMES.fetch(@piece)
-    "#{('%2d: ' % @move_id) if id}%s %2s -> %2s %4s%s in %d moves" % [
+    "#{('%2d: ' % @move_id) if id}%s %2s -> %2s %4s%s in %3d moves" % [
       color ? colorize(piece, color) : piece,
       @source_square, @destination_square,
       @result, result2, @moves
