@@ -219,22 +219,18 @@ class Game
       display = @board.reverse.map(&:reverse)
       rows = '4321'
       cols = 'CBA'
-      left_padding = ''
     when :down
       display = @board
       rows = '1234'
       cols = 'ABC'
-      left_padding = ''
     when :left
       display = @board.reverse.transpose
       rows = 'ABC'
       cols = '4321'
-      left_padding = ' ' * ([player_name(1, colorize: false).length, 6].max)
     when :right
       display = @board.transpose.reverse
       rows = 'CBA'
       cols = '1234'
-      left_padding = ' ' * ([player_name(-1, colorize: false).length, 6].max)
     else raise "unsupported orientation #{first_player_position}"
     end
     rows = rows.split(//)
@@ -256,8 +252,8 @@ class Game
     end
 
     # Table top
-    str << "#{left_padding}    #{cols.join('   ')}\n"
-    str <<  "#{left_padding}  ┏#{'━━━┳' * (cols.size - 1)}━━━┓\n"
+    str << "    #{cols.join('   ')}\n"
+    str <<  "  ┏#{'━━━┳' * (cols.size - 1)}━━━┓\n"
 
     # Table body
     str << display.zip(rows).map { |row, row_id|
@@ -287,12 +283,12 @@ class Game
         color = player_color(piece.player)
         colorize(name, color)
       }
-      "#{left_padding}#{row_id} ┃#{pieces.join('┃')}┃ #{row_id}\n"
-    }.join("#{left_padding}  ┣#{'━━━╋' * (cols.size - 1)}━━━┫\n")
+      "#{row_id} ┃#{pieces.join('┃')}┃ #{row_id}\n"
+    }.join("  ┣#{'━━━╋' * (cols.size - 1)}━━━┫\n")
 
     # Table bottom
-    str << "#{left_padding}  ┗#{'━━━┻' * (cols.size - 1)}━━━┛\n"
-    str << "#{left_padding}    #{cols.join('   ')}\n"
+    str << "  ┗#{'━━━┻' * (cols.size - 1)}━━━┛\n"
+    str << "    #{cols.join('   ')}\n"
 
     case first_player_position
     when :up
@@ -300,11 +296,11 @@ class Game
     when :down
       str <<  "#{player_name(1)} #{reserve_string(1)}\n"
     when :left
-      pad = left_padding + (' ' * (3 + cols.size * 3 + 3))
+      pad = ' ' * (3 + cols.size * 4 + 2 - @player_names[-1].length)
       str <<  "#{pad}#{player_name(-1)}\n"
       str <<  "#{pad}#{reserve_string(-1)}\n"
     when :right
-      pad = left_padding + (' ' * (3 + cols.size * 3 + 3))
+      pad = ' ' * (3 + cols.size * 4 + 2 - @player_names[1].length)
       str <<  "#{pad}#{player_name(1)}\n"
       str <<  "#{pad}#{reserve_string(1)}\n"
     end
