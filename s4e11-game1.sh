@@ -1,0 +1,32 @@
+echo "ccw
+2
+3
+7
+4
+7
+3
+5
+5
+11
+9
+4
+6
+1
+4
+5
+0
+8
+5
+2
+7
+2
+4
+12
+3
+11
+1
+6
+12
+9
+history
+" | ruby interactive-12shogi.rb Hyunmin Dongmin red
