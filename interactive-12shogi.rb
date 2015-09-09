@@ -90,7 +90,10 @@ class Game
   end
 
   def history
-    @undo_log.map { |move, _| move }
+    @undo_log.map { |move, info| {
+      move: move,
+      capture: info[:type] == :move && !info[:captured_piece].nil?,
+    }}
   end
 
   def apply_move(move)
@@ -434,15 +437,16 @@ class GameRunner
         return
       elsif raw == 'history'
         player_names = [1, -1].map { |i| [i, @game.player_name(i)] }.to_h
-        @game.history.each_with_index { |history_move, i|
+        @game.history.each_with_index { |history_entry, i|
           player_id = i % 2 == 0 ? 1 : -1
           color = @game.player_color(player_id)
           max_length = player_names.values.map(&:length).max
-          puts ("%2d. %#{max_length}s " % [i + 1, player_names[player_id]]) + history_move.to_s(
+          puts ("%2d. %#{max_length}s " % [i + 1, player_names[player_id]]) + history_entry[:move].to_s(
             id: false,
             my_name: player_names[player_id],
             opponents_name: player_names[-player_id],
             color: color,
+            capture: history_entry[:capture],
           )
         }
         return
