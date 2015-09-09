@@ -392,6 +392,7 @@ class GameRunner
       my_name: @game.player_to_move,
       opponents_name: @game.player_not_to_move,
       color: color,
+      capture: @game.is_capture(move),
     )}
   end
 
