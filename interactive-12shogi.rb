@@ -137,6 +137,12 @@ class Game
     @player_to_move *= -1
   end
 
+  def is_capture(move)
+    return false if move.source_square == '00'
+    three_side, four_side = self.class.interpret_coord(move.destination_square)
+    !!@board[four_side][three_side]
+  end
+
   def undo_move
     @player_to_move *= -1
 
