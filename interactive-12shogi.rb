@@ -32,6 +32,27 @@ PIECE_COMPUTER_NAMES = {
 
 PIECE_SYMBOLS = PIECE_COMPUTER_NAMES.invert
 
+TABLE_VERTICAL = '┃'
+TABLE_HORIZONTAL = '━━━'
+TABLE_EMPTY = '   '
+
+TABLE_UPPER_LEFT = '┏'
+TABLE_UPPER_RIGHT = '┓'
+TABLE_LOWER_LEFT = '┗'
+TABLE_LOWER_RIGHT = '┛'
+
+TABLE_UPPER_MIDDLE = '┳'
+TABLE_LOWER_MIDDLE = '┻'
+TABLE_LEFT_MIDDLE = '┣'
+TABLE_RIGHT_MIDDLE = '┫'
+
+TABLE_MIDDLE = '╋'
+
+FACING_UP = ?^
+FACING_DOWN = ?V
+FACING_LEFT = ?<
+FACING_RIGHT = ?>
+
 def colorize(str, color)
   "\e[1;#{color}m#{str}\e[0m"
 end
@@ -267,43 +288,43 @@ class Game
     end
 
     # Table top
-    str << "    #{cols.join('   ')}\n"
-    str <<  "  ┏#{Array.new(cols.size, '━━━').join('┳')}┓\n"
+    str << "    #{cols.join(TABLE_EMPTY)}\n"
+    str <<  "  #{TABLE_UPPER_LEFT}#{Array.new(cols.size, TABLE_HORIZONTAL).join(TABLE_UPPER_MIDDLE)}#{TABLE_UPPER_RIGHT}\n"
 
     # Table body
     str << display.zip(rows).map { |row, row_id|
       pieces = row.map { |piece|
-        next '   ' unless piece
+        next TABLE_EMPTY unless piece
         name = PIECE_NAMES.fetch(piece.type).dup
 
         case first_player_position
         when :up
-          name << (piece.player == 1 ? ?V : ?^)
+          name << (piece.player == 1 ? FACING_DOWN : FACING_UP)
         when :down
-          name << (piece.player == 1 ? ?^ : ?V)
+          name << (piece.player == 1 ? FACING_UP : FACING_DOWN)
         when :left
           if piece.player == 1
-            name << ?>
+            name << FACING_RIGHT
           else
-            name = ?< + name
+            name = FACING_LEFT + name
           end
         when :right
           if piece.player == 1
-            name = ?< + name
+            name = FACING_LEFT + name
           else
-            name << ?>
+            name << FACING_RIGHT
           end
         end
 
         color = player_color(piece.player)
         colorize(name, color)
       }
-      "#{row_id} ┃#{pieces.join('┃')}┃ #{row_id}\n"
-    }.join("  ┣#{Array.new(cols.size, '━━━').join('╋')}┫\n")
+      "#{row_id} #{TABLE_VERTICAL}#{pieces.join(TABLE_VERTICAL)}#{TABLE_VERTICAL} #{row_id}\n"
+    }.join("  #{TABLE_LEFT_MIDDLE}#{Array.new(cols.size, TABLE_HORIZONTAL).join(TABLE_MIDDLE)}#{TABLE_RIGHT_MIDDLE}\n")
 
     # Table bottom
-    str << "  ┗#{Array.new(cols.size, '━━━').join('┻')}┛\n"
-    str << "    #{cols.join('   ')}\n"
+    str << "  #{TABLE_LOWER_LEFT}#{Array.new(cols.size, TABLE_HORIZONTAL).join(TABLE_LOWER_MIDDLE)}#{TABLE_LOWER_RIGHT}\n"
+    str << "    #{cols.join(TABLE_EMPTY)}\n"
 
     case first_player_position
     when :up
