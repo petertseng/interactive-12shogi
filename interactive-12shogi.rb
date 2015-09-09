@@ -429,7 +429,7 @@ class GameRunner
           player_id = i % 2 == 0 ? 1 : -1
           color = @game.player_color(player_id)
           max_length = player_names.values.map(&:length).max
-          puts ("%#{max_length}s " % player_names[player_id]) + history_move.to_s(
+          puts ("%2d. %#{max_length}s " % [i + 1, player_names[player_id]]) + history_move.to_s(
             id: false,
             my_name: player_names[player_id],
             opponents_name: player_names[-player_id],
