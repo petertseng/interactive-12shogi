@@ -268,7 +268,7 @@ class Game
 
     # Table top
     str << "    #{cols.join('   ')}\n"
-    str <<  "  ┏#{'━━━┳' * (cols.size - 1)}━━━┓\n"
+    str <<  "  ┏#{Array.new(cols.size, '━━━').join('┳')}┓\n"
 
     # Table body
     str << display.zip(rows).map { |row, row_id|
@@ -299,10 +299,10 @@ class Game
         colorize(name, color)
       }
       "#{row_id} ┃#{pieces.join('┃')}┃ #{row_id}\n"
-    }.join("  ┣#{'━━━╋' * (cols.size - 1)}━━━┫\n")
+    }.join("  ┣#{Array.new(cols.size, '━━━').join('╋')}┫\n")
 
     # Table bottom
-    str << "  ┗#{'━━━┻' * (cols.size - 1)}━━━┛\n"
+    str << "  ┗#{Array.new(cols.size, '━━━').join('┻')}┛\n"
     str << "    #{cols.join('   ')}\n"
 
     case first_player_position
