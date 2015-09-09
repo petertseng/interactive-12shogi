@@ -32,26 +32,26 @@ PIECE_COMPUTER_NAMES = {
 
 PIECE_SYMBOLS = PIECE_COMPUTER_NAMES.invert
 
-TABLE_VERTICAL = '┃'
-TABLE_HORIZONTAL = '━━━'
-TABLE_EMPTY = '   '
+TABLE_VERTICAL = '｜'
+TABLE_HORIZONTAL = '－－'
+TABLE_EMPTY = '　　'
 
-TABLE_UPPER_LEFT = '┏'
-TABLE_UPPER_RIGHT = '┓'
-TABLE_LOWER_LEFT = '┗'
-TABLE_LOWER_RIGHT = '┛'
+TABLE_UPPER_LEFT = '＋'
+TABLE_UPPER_RIGHT = '＋'
+TABLE_LOWER_LEFT = '＋'
+TABLE_LOWER_RIGHT = '＋'
 
-TABLE_UPPER_MIDDLE = '┳'
-TABLE_LOWER_MIDDLE = '┻'
-TABLE_LEFT_MIDDLE = '┣'
-TABLE_RIGHT_MIDDLE = '┫'
+TABLE_UPPER_MIDDLE = '＋'
+TABLE_LOWER_MIDDLE = '＋'
+TABLE_LEFT_MIDDLE = '＋'
+TABLE_RIGHT_MIDDLE = '＋'
 
-TABLE_MIDDLE = '╋'
+TABLE_MIDDLE = '＋'
 
-FACING_UP = ?^
-FACING_DOWN = ?V
-FACING_LEFT = ?<
-FACING_RIGHT = ?>
+FACING_UP = ?＾
+FACING_DOWN = ?ｖ
+FACING_LEFT = ?＜
+FACING_RIGHT = ?＞
 
 def colorize(str, color)
   "\e[1;#{color}m#{str}\e[0m"
@@ -253,20 +253,20 @@ class Game
     case first_player_position
     when :up
       display = @board.reverse.map(&:reverse)
-      rows = '4321'
+      rows = '４３２１'
       cols = 'CBA'
     when :down
       display = @board
-      rows = '1234'
+      rows = '１２３４'
       cols = 'ABC'
     when :left
       display = @board.reverse.transpose
       rows = 'ABC'
-      cols = '4321'
+      cols = '４３２１'
     when :right
       display = @board.transpose.reverse
       rows = 'CBA'
-      cols = '1234'
+      cols = '１２３４'
     else raise "unsupported orientation #{first_player_position}"
     end
     rows = rows.split(//)
