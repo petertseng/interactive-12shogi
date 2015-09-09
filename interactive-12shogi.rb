@@ -368,8 +368,8 @@ class Move
     piece = PIECE_NAMES.fetch(@piece)
     "#{('%2d: ' % @move_id) if id}%s %2s %s %2s %4s%s in %3d moves" % [
       color ? colorize(piece, color) : piece,
-      @source_square,
-      capture ? ?x : ?-,
+      @source_square == '00' ? '  ' : @source_square,
+      @source_square == '00' ? ?* : (capture ? ?x : ?-),
       @destination_square,
       @result, result2, @moves
     ]
