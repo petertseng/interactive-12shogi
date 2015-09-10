@@ -143,7 +143,11 @@ class Game
       raise "#{@player_to_move} #{move} moved an #{old_piece}, expected #{move.piece}" unless move.piece == old_piece.type || promoting
 
       captured_piece = @board[four_side_new][three_side_new]
-      @reserves.fetch(@player_to_move)[captured_piece.type] += 1 if captured_piece
+      captured_type = captured_piece && captured_piece.type
+      if captured_piece
+        piece_to_reserve = captured_type == :hen ? :chick : captured_type
+        @reserves.fetch(@player_to_move)[piece_to_reserve] += 1
+      end
 
       @board[four_side_old][three_side_old] = nil
 
@@ -154,7 +158,7 @@ class Game
         four_side_new: four_side_new,
         three_side_new: three_side_new,
         piece: old_piece.type,
-        captured_piece: captured_piece && captured_piece.type
+        captured_piece: captured_type,
       }]
     end
     @board[four_side_new][three_side_new] = Piece.new(@player_to_move, move.piece)
@@ -180,9 +184,11 @@ class Game
 
       if move[:captured_piece]
         # Remove the captured piece from the player's reserves.
-        old_count = @reserves.fetch(@player_to_move).fetch(move[:captured_piece])
+        captured_piece = move[:captured_piece]
+        piece_to_unreserve = captured_piece == :hen ? :chick : captured_piece
+        old_count = @reserves.fetch(@player_to_move).fetch(piece_to_unreserve)
         raise "#{@player_to_move} #{move} undid capture of nonexistent #{move[:captured_piece]}" unless old_count > 0
-        @reserves.fetch(@player_to_move)[move[:captured_piece]] = old_count - 1
+        @reserves.fetch(@player_to_move)[piece_to_unreserve] = old_count - 1
         # Put the captured piece back on the board, on the opponent's side.
         @board[move[:four_side_new]][move[:three_side_new]] = Piece.new(-@player_to_move, move[:captured_piece])
       else
