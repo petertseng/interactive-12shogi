@@ -409,11 +409,14 @@ if ARGV.include?('-h')
 end
 
 class GameRunner
+  attr_reader :retries
+
   def initialize(game)
     @game = game
     @first_player_position = :down
     @possible_moves = []
     @filename = Tempfile.new('12janggi').path
+    @retries = 0
   end
 
   def output_moves
@@ -448,9 +451,12 @@ class GameRunner
       else
         puts 'tmp file got deleted somehow?'
       end
+      @retries += 1
       puts 'retrying?'
       return
     end
+
+    @retries = 0
 
     output_moves
 
@@ -552,4 +558,12 @@ game = Game.new(
 )
 
 runner = GameRunner.new(game)
-loop { runner.run }
+loop {
+  if runner.retries >= 10
+    puts "Failed to communicate with #{EXECUTABLE} suspiciously many times."
+    puts 'Check that all required files are present.'
+    Kernel.exit(1)
+  end
+
+  runner.run
+}
