@@ -260,18 +260,18 @@ class Game
     when :up
       display = @board.reverse.map(&:reverse)
       rows = '４３２１'
-      cols = 'CBA'
+      cols = 'ＣＢＡ'
     when :down
       display = @board
       rows = '１２３４'
-      cols = 'ABC'
+      cols = 'ＡＢＣ'
     when :left
       display = @board.reverse.transpose
-      rows = 'ABC'
+      rows = 'ＡＢＣ'
       cols = '４３２１'
     when :right
       display = @board.transpose.reverse
-      rows = 'CBA'
+      rows = 'ＣＢＡ'
       cols = '１２３４'
     else raise "unsupported orientation #{first_player_position}"
     end
@@ -294,8 +294,8 @@ class Game
     end
 
     # Table top
-    str << "    #{cols.join(TABLE_EMPTY)}\n"
-    str <<  "  #{TABLE_UPPER_LEFT}#{Array.new(cols.size, TABLE_HORIZONTAL).join(TABLE_UPPER_MIDDLE)}#{TABLE_UPPER_RIGHT}\n"
+    str << "　　#{cols.join(TABLE_EMPTY)}\n"
+    str <<  "　#{TABLE_UPPER_LEFT}#{Array.new(cols.size, TABLE_HORIZONTAL).join(TABLE_UPPER_MIDDLE)}#{TABLE_UPPER_RIGHT}\n"
 
     # Table body
     str << display.zip(rows).map { |row, row_id|
@@ -325,12 +325,12 @@ class Game
         color = player_color(piece.player)
         colorize(name, color)
       }
-      "#{row_id} #{TABLE_VERTICAL}#{pieces.join(TABLE_VERTICAL)}#{TABLE_VERTICAL} #{row_id}\n"
-    }.join("  #{TABLE_LEFT_MIDDLE}#{Array.new(cols.size, TABLE_HORIZONTAL).join(TABLE_MIDDLE)}#{TABLE_RIGHT_MIDDLE}\n")
+      "#{row_id}#{TABLE_VERTICAL}#{pieces.join(TABLE_VERTICAL)}#{TABLE_VERTICAL}#{row_id}\n"
+    }.join("　#{TABLE_LEFT_MIDDLE}#{Array.new(cols.size, TABLE_HORIZONTAL).join(TABLE_MIDDLE)}#{TABLE_RIGHT_MIDDLE}\n")
 
     # Table bottom
-    str << "  #{TABLE_LOWER_LEFT}#{Array.new(cols.size, TABLE_HORIZONTAL).join(TABLE_LOWER_MIDDLE)}#{TABLE_LOWER_RIGHT}\n"
-    str << "    #{cols.join(TABLE_EMPTY)}\n"
+    str << "　#{TABLE_LOWER_LEFT}#{Array.new(cols.size, TABLE_HORIZONTAL).join(TABLE_LOWER_MIDDLE)}#{TABLE_LOWER_RIGHT}\n"
+    str << "　　#{cols.join(TABLE_EMPTY)}\n"
 
     case first_player_position
     when :up
