@@ -338,11 +338,21 @@ class Game
     when :down
       str <<  "#{player_name(1)} #{reserve_string(1)}\n"
     when :left
-      pad = ' ' * (3 + cols.size * 4 + 2 - @player_names[-1].length)
+      # Line up the right edge of the name with the right edge of the board.
+      # Board has row id on the left, 3 chars per column (left edge + cell),
+      # the right edge of the board, and row id on the right.
+      # Subtract the player name length to make it line up...
+      # BUT we assume that the player name is half-width!
+      # Since the board is full-width, divide player name length by 2.
+      # (Can we revisit this assumption?)
+      name_length = (@player_names[-1].length / 2.0).ceil
+      pad = '　' * (1 + cols.size * 3 + 2 - name_length)
       str <<  "#{pad}#{player_name(-1)}\n"
       str <<  "#{pad}#{reserve_string(-1)}\n"
     when :right
-      pad = ' ' * (3 + cols.size * 4 + 2 - @player_names[1].length)
+      # Math is as above.
+      name_length = (@player_names[1].length / 2.0).ceil
+      pad = '　' * (1 + cols.size * 3 + 2 - name_length)
       str <<  "#{pad}#{player_name(1)}\n"
       str <<  "#{pad}#{reserve_string(1)}\n"
     end
